@@ -1,0 +1,124 @@
+<style lang="scss">
+@import "../css/base";
+
+.list-item{
+    padding: 10px;
+    word-break: break-all;
+    text-align: justify;
+
+    text{
+        display: inline-block;
+        font-size: rpx(34);
+        color: $title-color;
+        position: relative;
+        top: rpx(10);
+    }
+}
+</style>
+<template>
+	<view class="container" @tap="tap">
+        <scrollmore :loading.sync="loading" :noMore.sync="noMore">
+            <view class="list-item" wx:for="{{ listData }}" wx:key="{{ item.index }}">
+                <text>{{ item.index }} id: {{ item.id }}</text>
+                <text>{{ item.text }}</text>
+            </view>
+        </scrollmore>
+		<toast />
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import ScrollMore from '../components/scroll-more'
+import api from '../common/api'
+
+export default class NewsList extends wepy.page {
+	config = {
+		navigationBarTitleText: '新闻'
+	}
+	components = {
+		'toast': Toast,
+        'scrollmore': ScrollMore
+	}
+
+	mixins = [Mixin]
+
+	data = {
+        listData: [],
+        loading: true,
+        noMore: false,
+        isLoading: false //数据请求中
+	}
+
+	computed = {
+		now () {
+			return +new Date()
+		}
+	}
+
+    fetchData(id) {  //生成数据
+        const newquestions = [];
+        id = ~~id
+        for (let i = 0; i < 20; i++) {
+            id++
+            newquestions.push({
+                id: id,
+                index: 1,
+                text: '服务ssssssssssssssssssssssssssssssssssssssssssssssssssssss名称适用品类服务实施详情服务期限服务生效时间摔碰管修一年笔记本本服务有效期内，如客户的数码摄照产品在正常使用过程中由于不慎将产品坠落、挤压、碰撞，而产生的硬件故障，本服务将免费提供硬件维修或更换，使产品重新恢复正常运行。12个月购机满30天后开始生效摔碰管修两年笔记本、数码相机、摄像机、手机、小数码'
+            })
+        }
+        return newquestions
+    }
+
+    pulldownData() {
+	    if (this.isLoading) {
+            return
+        }
+        this.isLoading = true
+        setTimeout(() => {
+            this.listData = this.listData.concat(this.fetchData(this.listData.length))
+            this.isLoading = false
+            this.$apply()
+        }, 1000)
+    }
+
+    noMoreData() {
+        this.noMore = true
+        this.loading = false
+        this.$apply()
+    }
+
+    methods = {
+        tap() {
+            console.log(this.mixin)
+        }
+	}
+
+    events = {
+        refresh() {
+            if (this.listData.length > 50) {
+                this.noMoreData()
+                return
+            }
+            this.pulldownData()
+        }
+    }
+
+	onLoad () {
+		api.newsList().then(res => {
+			this.$invoke('toast', 'show', {
+				title: '获取新闻列表成功',
+				img: '../img/up.png'
+			})
+		})
+        this.listData = this.fetchData()
+        this.$apply()
+	}
+
+    onReady() {
+
+    }
+}
+</script>

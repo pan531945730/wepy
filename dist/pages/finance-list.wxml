@@ -1,0 +1,64 @@
+
+    <view class="container">
+        
+	<view class="nav-tab _e2e0853">
+        <view class="tab-title _e2e0853">
+            <text  wx:for="{{ $navtab$tabData }}" bindtap="$navtab$setTab" class="{{ $navtab$showtab == index ? 'active' : ''}} _e2e0853" data-index="{{ index }}" data-type="{{ item.type }}" wx:key="{{ index }}" style="width: {{ 100/$navtab$tabNum }}%">{{ item.text }}</text>
+            <view class="line-box _e2e0853" style="width:{{ 100/$navtab$tabNum }}%; transform:translateX({{ 100*$navtab$showtab }}%);">
+                <view class="lines _e2e0853"/>
+            </view>
+        </view>
+        <view class="tab-content _e2e0853" bindtouchstart="$navtab$scrollTouchstart" bindtouchmove="$navtab$scrollTouchmove" bindtouchend="$navtab$scrollTouchend" style="width: {{ $navtab$tabNum * 100 }}%; transform: translateX( -{{ $navtab$showtab * 100 / $navtab$tabNum }}%); margin-left: {{ $navtab$marginleft }}px;">
+            
+            <block  wx:for="{{ tabData }}" wx:key="{{ index }}">
+                
+    <view class="scroll-box _deb6076">
+        <scroll-view class="scroll-view _deb6076" bindtouchstart="$scroll$scrollTouchstart" style="transform: translateY({{ $scroll$translateY }}px);" scroll-y bindscrolltolower="$scroll$tolower" enable-back-to-top="enable-back-to-top" bindscrolltoupper="$scroll$toupper" bindscroll="$scroll$scrolling">
+            
+                    <view class="list-item" wx:for="{{ listMap[index] }}" wx:key="{{ item.index }}">
+                        <text>{{ item.index }} id: {{ item.id }}</text>
+                        <text>{{ item.text }}</text>
+                    </view>
+                
+        </scroll-view>
+        <view class="loading-wrapper top _deb6076"  wx:if="{{ $scroll$loading && $scroll$pullup }}">
+            <view class="uil-default-css _deb6076">
+                <view class="loading-item _deb6076" style="transform: rotate(0deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(30deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(60deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(90deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(120deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(150deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(180deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(210deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(240deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(270deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(300deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(330deg) translate(0px, -60px);"/>
+            </view>
+        </view>
+        <view class="loading-wrapper bottom _deb6076"  wx:if="{{ $scroll$loading  && $scroll$pulldown }}">
+            <view class="uil-default-css _deb6076">
+                <view class="loading-item _deb6076" style="transform: rotate(0deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(30deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(60deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(90deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(120deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(150deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(180deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(210deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(240deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(270deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(300deg) translate(0px, -60px);"/>
+                <view class="loading-item _deb6076" style="transform: rotate(330deg) translate(0px, -60px);"/>
+            </view>
+        </view>
+        <view class="no-more top _deb6076"  wx:if="{{ $scroll$noMore  && $scroll$pullup }}">没有更多数据了</view>
+        <view class="no-more bottom _deb6076" wx:if="{{ $scroll$noMore && $scroll$pulldown }}">没有更多数据了</view>
+        <view class="mask _deb6076" hidden="{{ !$scroll$mask }}" catchtouchstart="$scroll$maskTouchstart" catchtouchmove="$scroll$maskTouchmove" bindtouchend="$scroll$maskTouchend"/>
+    </view>
+            </block>
+        
+        </view>
+	</view>
+    </view>

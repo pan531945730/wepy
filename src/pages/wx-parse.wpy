@@ -1,0 +1,81 @@
+<style lang="scss">
+@import "../css/base";
+@import "../wxParse/wxParse";
+
+.section{
+    margin: rpx(20) rpx(20) 0;
+}
+.section-title{
+    margin-bottom: rpx(20);
+    color: #f50;
+}
+</style>
+<template>
+    <import src="../wxParse/wxParse.wxml" />
+    <view class="container">
+        <view class="section">
+            <view class="section-title">wxParse解析html代码</view>
+            <view @tap="insertNodeTap">插入html</view>
+            <template is="wxParse" data="{{ wxParseData: aHrefHrefData.nodes }}" />
+            <template is="wxParse" data="{{ wxParseData: emojisData.nodes }}" />
+            <block wx:for="{{ insertData }}" wx:key="{{ index }}">
+                <template is="wxParse" data="{{ wxParseData: item }}" />
+            </block>
+        </view>
+        <toast />
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import WxParse from '../wxParse/wxParse'
+import api from '../common/api'
+
+export default class ParseHtml extends wepy.page {
+    config = {
+        navigationBarTitleText: '解析html'
+    }
+    components = {
+        'toast': Toast
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        insertData: [],
+        tempData: []
+    }
+
+    methods = {
+        wxParseTagATap(e) {
+            var href = e.currentTarget.dataset.src
+            console.log(href)
+        },
+        insertNodeTap() {
+            let len = this.tempData.length + 1
+            let img = len < 10 ? '0' + len : len
+            var insert = '<div style="color:red;text-align:center;padding:20px;"><div style="color: blue;">'+ len +'摇一摇</div>我是一个被插入的元素,喜欢['+ img +']<img src="http://www.jq22.com/demo/jQueryWaterfallFlow20160830/img/'+ img +'.jpg" /></div>'
+            this.tempData.push(insert)
+            WxParse.wxParse('insert' + (len-1), 'html', insert, this, 50)
+            WxParse.wxParseTemArray("insertData", 'insert', len, this)
+        },
+        wxParseImgLoad(e) {
+            this.wxParseImgLoad(e)
+        },
+        wxParseImgTap(e) {
+            this.wxParseImgTap(e)
+        }
+    }
+
+    onLoad (e, data) {
+        var aHrefHrefData = '<div style="color:red;text-align:center;padding:20px;"><a href="https://weappdev.com/index.html">点击我，可以跳转</a></div>'
+        WxParse.wxParse('aHrefHrefData', 'html', aHrefHrefData, this)
+
+        WxParse.emojisInit()
+        var emojisData = '<div style="color:red;text-align:center;padding:20px;"><a href="https://weappdev.com/index.html">点击我，可以跳转</a>我带有小表情[00][01][02][03]</div>'
+        WxParse.wxParse('emojisData', 'html', emojisData, this)
+    }
+}
+</script>

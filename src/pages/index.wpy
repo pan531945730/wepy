@@ -1,0 +1,173 @@
+<style lang="scss">
+@import "../css/base";
+
+
+.container {
+    flex-direction: row;
+}
+.weui-flex{
+    align-items: center;
+}
+.weui-cells{
+    margin-top: 0;
+    opacity: 0;
+    transform: translateY(-50%);
+    transition: .3s;
+    &:before, &:after{
+        display: none;
+    }
+    &_show{
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.weui-cell{
+    &:before{
+        right: 15px;
+    }
+}
+
+.kind-list{
+    width: rpx(750);
+}
+.kind-list__item{
+    margin: 10px 0;
+    border-radius: 2px;
+    overflow: hidden;
+    &:first-child{
+        margin-top: 0;
+    }
+}
+.right-arrow{
+    @include setArrow(right, 8px, #aaa);
+}
+
+.kind-list__item-hd{
+    padding: 20px;
+    transition: opacity .3s;
+    background: #fff;
+
+    &_show{
+        opacity: .4;
+    }
+}
+.kind-list__item-bd{
+    height: 0;
+    overflow: hidden;
+    transition: height .3s;
+
+    &_show{
+        height: auto;
+    }
+}
+</style>
+<template>
+	<view class="container">
+        <view class="kind-list">
+            <navigator url="form" class="weui-flex kind-list__item-hd">
+                <view class="weui-flex__item">表单组件</view>
+                <view class="right-arrow"></view>
+            </navigator>
+            <navigator url="map" class="weui-flex kind-list__item-hd">
+                <view class="weui-flex__item">地图组件</view>
+                <view class="right-arrow"></view>
+            </navigator>
+            <navigator url="canvas" class="weui-flex kind-list__item-hd">
+                <view class="weui-flex__item">canvas</view>
+                <view class="right-arrow"></view>
+            </navigator>
+            <navigator url="wx-parse" class="weui-flex kind-list__item-hd">
+                <view class="weui-flex__item">wxParse</view>
+                <view class="right-arrow"></view>
+            </navigator>
+            <view class="weui-flex kind-list__item-hd" @tap="goUser" hover hover-class="hover">
+                <view class="weui-flex__item">页面之间相互传值</view>
+                <view class="right-arrow"></view>
+            </view>
+            <repeat for="{{list}}" key="id">
+                <view class="kind-list__item">
+                    <view id="{{item.id}}" hover hover-class="hover" class="weui-flex kind-list__item-hd {{item.open ? 'kind-list__item-hd_show' : ''}}" @tap="toggle({{item.id}})">
+                        <view class="weui-flex__item">{{item.name}}</view>
+                        <view class="right-arrow"></view>
+                    </view>
+                    <view class="kind-list__item-bd {{item.open ? 'kind-list__item-bd_show' : ''}}">
+                        <view class="weui-cells {{item.open ? 'weui-cells_show' : ''}}">
+                            <navigator url="index" class="weui-cell weui-cell_access" wx:for="{{item.pages}}" wx:for-item="page" wx:key="*this">
+                                <view class="weui-cell__bd">{{page}}</view>
+                                <view class="right-arrow"></view>
+                            </navigator>
+                        </view>
+                    </view>
+                </view>
+            </repeat>
+        </view>
+        <loading :fixed="fixed" />
+		<toast />
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import Loading from '../components/loading'
+import config from '../common/config'
+import api from '../common/api'
+
+export default class Index extends wepy.page {
+	config = {
+		navigationBarTitleText: '首页'
+	}
+	components = {
+		'toast': Toast,
+        'loading': Loading
+	}
+
+	mixins = [Mixin]
+
+	data = {
+        fixed: true,
+        list: [
+            {
+                id: 'menu',
+                name: '折叠菜单',
+                open: false,
+                pages: ['a', 'b', 'c', 'd', 'e']
+            }
+        ]
+	}
+
+	computed = {
+
+	}
+
+	methods = {
+        toggle (id) {
+            this.list.forEach(v => {
+                v.open = (v.id === id) ? !v.open : false
+            });
+        },
+        goUser() {
+            this.$preload({ userName: 'Gcaufy'});
+            wx.switchTab({
+                url: 'user'
+            })
+        }
+    }
+
+	onLoad () {
+
+	}
+
+	onReady() {
+	    setTimeout(() => {
+            this.$invoke('loading', 'hide')
+        }, 1000)
+    }
+
+    onShareAppMessage() {
+        return config.shareData
+    }
+}
+</script>

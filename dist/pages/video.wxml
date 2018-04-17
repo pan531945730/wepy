@@ -1,0 +1,27 @@
+
+	<view class="container">
+        
+    <view class="section _f29883e">
+        <video id="video" src="{{ $danmu$videoSrc }}" poster="{{ $danmu$poster }}" height="{{ $danmu$height }}" danmu-list="{{ $danmu$danmuList }}" enable-danmu danmu-btn controls class="_f29883e"/>
+        <view class="btn-box _f29883e">
+            <button bindtap="$danmu$getVideo" class="_f29883e">获取视频</button>
+            <input bindblur="$danmu$inputBlur" value="{{ $danmu$inputValue }}" placeholder="说点什么吧" class="_f29883e"/>
+            <button bindtap="$danmu$sendDanmu" class="_f29883e">发送弹幕</button>
+        </view>
+    </view>
+		
+    <view class="wetoast {{$toast$reveal ? 'wetoast_show' : ''}}">
+        <view class="wetoast__mask"/>
+        <view class="wetoast__bd" animation="{{$toast$animationData}}">
+            <block  wx:if="{{$toast$img}}">
+                <view class="wetoast__bd__img {{$toast$imgClassName || ''}}">
+                    <image class="wetoast__bd__img_desc" src="{{$toast$img}}" mode="{{$toast$imgMode || 'scaleToFill'}}"/>
+                </view>
+            </block>
+            <block  wx:if="{{$toast$title}}">
+                <view class="wetoast__bd__title {{$toast$titleClassName || ''}}">{{$toast$title}}</view>
+            </block>
+        </view>
+    </view>
+
+	</view>

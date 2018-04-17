@@ -1,0 +1,196 @@
+<style lang="scss">
+@import "../css/base";
+
+.label{
+    display: inline-block;
+    margin: 20px 0 0 20px;
+}
+checkbox-group{
+    width: rpx(750);
+}
+.scale-smaller{
+    transform: scale(.82);
+}
+.section{
+    margin: rpx(20) rpx(20) 0;
+}
+.section-title{
+    margin-bottom: rpx(20);
+    color: #f50;
+}
+.choose{
+    width: 200px;
+    height: 80px;
+    text-align: center;
+    line-height: 80px;
+    background: #3CC51F;
+    color: #fff;
+    border-radius: 5px;
+    margin: rpx(40) auto;
+}
+</style>
+<template>
+	<view class="container">
+        <checkbox-group @change="checkboxChange">
+            <label class="label" wx:for="{{ items }}" wx:key="{{ index }}">
+                <checkbox class="scale-smaller" value="{{ item.name }}" checked="{{ item.checked }}"/>
+                <text>{{ item.value }}</text>
+            </label>
+        </checkbox-group>
+        <checkbox-group @change="checkboxChange">
+            <view class="section-title">自定义checkbox</view>
+            <repeat wx:for="{{ items }}" wx:key="{{ index }}">
+                <mycheckbox :labelClass="label" :index="index" :name="item.name" :value="item.value" :checked="item.checked"></mycheckbox>
+            </repeat>
+        </checkbox-group>
+        <radio-group class="radio-group" @change="radioChange">
+            <label class="label" wx:for="{{ items }}" wx:key="{{ index }}">
+                <radio value="{{ item.name }}" checked="{{ item.checked }}" class="scale-smaller"/>
+                <text>{{ item.value }}</text>
+            </label>
+        </radio-group>
+        <switch color="#f50" class="scale-smaller" checked @change="switch1Change"/>
+        <view class="section">
+            <view class="section-title">城市选择器</view>
+            <city :cityData="cityData"></city>
+        </view>
+        <view class="section">
+            <view class="section-title">城市选择器2</view>
+            <city2 :cityData="cityData"></city2>
+        </view>
+        <view class="section">
+            <view class="section-title">自定义日期选择器</view>
+            <pdate :start="startDate"></pdate>
+        </view>
+        <view class="section">
+            <view class="section-title">时间选择器</view>
+            <picker mode="time" value="{{ time }}" start="09:01" end="21:01" @change=" timeChange ">
+                <view class="picker">
+                    当前选择: {{ time }}
+                </view>
+            </picker>
+        </view>
+
+        <view class="section">
+            <view class="section-title">日期选择器</view>
+            <picker mode="date" value="{{ date }}" start="2015-09-01" end="2017-09-01" @change="dateChange">
+                <view class="picker">
+                    当前选择: {{ date }}
+                </view>
+            </picker>
+        </view>
+
+        <view class="section">
+            <text class="section__title">设置left/right icon</text>
+            <view class="body-view">
+                <slider class="scale-smaller" @change="sliderChange" activeColor="#f50" value="20" show-value />
+            </view>
+        </view>
+		<view class="section">
+			<image wx:for="{{ files }}" wx:key="{{ index }}" style="width: 100px;" mode="widthFix" src="{{ item }}"></image>
+			<button class="choose" @tap="chooseImage"><text>选择图片</text></button>
+		</view>
+        <view class="section">
+            <textarea @confirm="textConfirm" placeholder="请输入" confirm-type="done" />
+        </view>
+
+        <view><view style="width: 100%; height: 100px; background: #eee;"></view></view>
+		<toast />
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import Checkbox from '../components/checkbox'
+import PickerCity from '../components/picker-city'
+import PickerCity2 from '../components/picker-city2'
+import PickerDate from '../components/picker-date'
+import api from '../common/api'
+import * as cityData from '../common/cityData'
+
+export default class Form extends wepy.page {
+	config = {
+		navigationBarTitleText: '表单组件'
+	}
+	components = {
+		'toast': Toast,
+        'mycheckbox': Checkbox,
+        'mycheckbox2': Checkbox,
+        'city': PickerCity,
+        'city2': PickerCity2,
+        'pdate': PickerDate
+	}
+
+	mixins = [Mixin]
+
+	data = {
+        label: 'label',
+        items: [
+            {name: 'USA', value: '美国'},
+            {name: 'CHN', value: '中国', checked: true},
+            {name: 'BRA', value: '巴西'},
+            {name: 'JPN', value: '日本'},
+            {name: 'ENG', value: '英国'},
+            {name: 'TUR', value: '法国'},
+        ],
+        startDate: '1998-02-22',
+        cityData: cityData,
+        date: '2016-09-01',
+        time: '12:01',
+		files: []
+	}
+
+	computed = {
+
+	}
+
+	methods = {
+        checkboxChange(e) {
+            console.log('checkbox发生change事件，携带value值为：', e.detail.value)
+        },
+        radioChange(e) {
+            console.log('radio发生change事件，携带value值为：', e.detail.value)
+        },
+        switch1Change(e) {
+            console.log('switch1 发生 change 事件，携带值为', e.detail.value)
+        },
+        timeChange(e) {
+            this.time = e.detail.value
+
+        },
+        dateChange(e) {
+            this.date = e.detail.value
+        },
+        sliderChange(e) {
+            console.log('slider 发生 change 事件，携带值为', e.detail.value)
+        },
+        textConfirm(e) {
+            console.log(e.detail.value)
+        },
+		async chooseImage (e) {
+            let res = await wepy.chooseImage({
+                sizeType: ['original', 'compressed'], // 可以指定是原图还是压缩图，默认二者都有
+                sourceType: ['album', 'camera'] // 可以指定来源是相册还是相机，默认二者都有
+            });
+            console.log(res)
+            this.files = this.files.concat(res.tempFilePaths);
+
+            this.$apply();
+        }
+	}
+
+	onLoad (e) {
+	    this.$broadcast('cityInit', 1, 0, 0)
+        this.$broadcast('dateInit', '2004-05-11')
+        console.log(this.$parent.globalData)
+	}
+
+	events = {
+	    citychange(data) {
+	        console.log(data)
+        }
+    }
+}
+</script>

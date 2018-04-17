@@ -1,0 +1,107 @@
+<style lang="scss">
+@import "../css/base";
+
+
+</style>
+<template>
+    <view class="container">
+        <map id="map" longitude="113.324520" latitude="23.099994" scale="14" controls="{{ controls }}" @controltap="controltap" markers="{{ markers }}" @markertap="markertap" polyline="{{ polyline }}" circles="{{ circles }}" @regionchange="regionchange" show-location style="width: 100%; height:100%;"></map>
+        <toast />
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import api from '../common/api'
+
+export default class Map extends wepy.page {
+    config = {
+        navigationBarTitleText: '地图'
+    }
+    components = {
+        'toast': Toast
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        markers: [
+            {
+                iconPath: "../img/culture.png",
+                id: 0,
+                latitude: 23.099994,
+                longitude: 113.324520,
+                width: 50,
+                height: 50,
+                title: '眼镜店',
+                label: {
+                    content: 'aaa',
+                    color: '#ff5500',
+                    fontSize: 20,
+                    x: 10,
+                    y: 10
+                }
+            }
+        ],
+        circles: [
+            {
+                id: 5,
+                latitude: 23.099994,
+                longitude: 113.324720,
+                fillColor: '#ff5500',
+                radius: 50
+            }
+        ],
+        polyline: [
+            {
+                points: [{
+                    longitude: 113.3245211,
+                    latitude: 23.10229
+                }, {
+                    longitude: 113.324520,
+                    latitude: 23.21229
+                }],
+                color:"#000000",
+                width: 2,
+                dottedLine: true,
+                arrowLine: true
+            }
+        ],
+        controls: [
+            {
+                id: 1,
+                iconPath: '../img/dollar.png',
+                position: {
+                    left: 0,
+                    top: 0,
+                    width: 50,
+                    height: 50
+                },
+                clickable: true
+            }
+        ]
+    }
+
+    methods = {
+        regionchange(e) {
+            console.log(e.type)
+        },
+        markertap(e) {
+            console.log(e.markerId)
+        },
+        controltap(e) {
+            console.log(e.controlId)
+        }
+    }
+
+    onLoad (e, data) {
+        var res = wx.getSystemInfoSync()
+        this.controls[0].position.top = res.windowHeight - 50
+        this.$apply()
+    }
+
+
+}
+</script>

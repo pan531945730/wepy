@@ -1,0 +1,80 @@
+<style lang="scss">
+@import "../css/base";
+
+.checkbox{
+    width: rpx(34);
+    height: rpx(34);
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    margin-right: rpx(10);
+
+    checkbox{
+        width: rpx(34);
+        height: rpx(34);
+        opacity: 0;
+
+    }
+    .icon{
+        width: rpx(32);
+        height: rpx(32);
+        border: rpx(1) solid #ccc;
+        background: #fff;
+        border-radius: 2px;
+        position: absolute;
+        left: 0;
+        top: 1px;
+
+        &.checked{
+            background: #aaa;
+        }
+    }
+}
+</style>
+<template>
+    <label class="{{ labelClass }}"  @tap="change"  wx:for="{{ list }}" wx:key="{{ index }}" data-index="{{ index }}" data-checked="{{ item.checked }}">
+        <view class="checkbox">
+            <checkbox value="{{ item.name }}" checked="{{ item.checked }}" />
+            <view class="icon {{ checkedData[index]  ? 'checked' : '' }}"></view>
+            <view wx:if="{{ !showData[index] && item.checked  }}" class="icon checked"></view>
+        </view>
+        <text>{{ item.value }}</text>
+    </label>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class Checkbox extends wepy.component {
+	props = {
+        labelClass: {
+            type: String,
+            default: ''
+        },
+        list: {
+          type: Array,
+          default: []
+        }
+	}
+
+	data = {
+	    showData: {},
+        checkedData: {}
+    }
+
+	methods = {
+        change(e) {
+            let index = e.currentTarget.dataset.index
+            if (typeof this.checkedData[index] === 'undefined') {
+                this.showData[index] = true
+                this.checkedData[index] = !e.currentTarget.dataset.checked
+            } else {
+                this.checkedData[index] = !this.checkedData[index]
+            }
+        }
+	}
+
+	events = {
+
+    }
+}
+</script>

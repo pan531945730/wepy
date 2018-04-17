@@ -1,0 +1,4 @@
+@import "./../components/pull-more.wxss";
+@import "./../components/nav-tab.wxss";
+@import "./../npm/wepy-com-toast/toast.wxss";
+.list-item{padding:10px;word-break:break-all;text-align:justify}.list-item text{display:inline-block;font-size:34rpx;color:#333;position:relative;top:10rpx}

@@ -1,0 +1,62 @@
+﻿/*
+ 联动选择器样式
+*/
+@import "base";
+
+.picker-bg{
+    position: fixed;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,.3);
+    z-index: 100;
+}
+.picker-box{
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.5s;
+    background: #fff;
+    z-index: 101;
+}
+.picker{
+    height: 240px;
+}
+.item{
+    line-height: 40px;
+    height: 40px;
+}
+.btn-box{
+    width: 100%;
+    overflow: hidden;
+    background: #fbf9fe;
+
+    button{
+        width: rpx(120);
+        height: 40px;
+        line-height: 40px;
+        background: transparent;
+        border: 0;
+        border-radius: 0;
+        font-size: 14px;
+        color: #6b7ca0;
+
+        &::after{
+            border: 0;
+            border-radius: 0;
+        }
+    }
+    .cancel{
+        float: left;
+    }
+    .ok{
+        float: right;
+    }
+    .button-hover{
+        opacity: 1;
+        color: $main-color;
+    }
+}

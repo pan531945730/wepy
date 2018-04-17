@@ -1,0 +1,155 @@
+<style lang="scss" scoped>
+@import "../css/base";
+
+
+.nav-tab{
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+
+    .tab-title{
+        width: 100%;
+        padding: 0 rpx(50);
+        box-sizing: border-box;
+        height: rpx(88);
+        line-height: rpx(88);
+        text-align: center;
+        margin-bottom: rpx(16);
+        background: #fff;
+        position: relative;
+
+        &::before{
+            @include setLine(bottom, #e6e6e6)
+        }
+
+        text{
+            display: inline-block;
+            font-size: rpx(34);
+            color: $title-color;
+            position: relative;
+            top: rpx(10);
+        }
+    }
+
+	.line-box{
+		position: relative;
+        transition: transform 0.5s;
+        top: -1px;
+	}
+	.lines{
+		@include setLine(bottom, $main-color, 2px);
+		width: rpx(50);
+		left: 50%;
+		margin-left: rpx(-25);
+	}
+	.active{
+		color: $main-color;
+	}
+    .tab-content{
+        width: 500%;
+        height: 100%;
+        display: flex;
+        transition: transform 0.5s;
+        background: #fff;
+    }
+}
+</style>
+<template>
+	<view class="nav-tab">
+        <view class="tab-title">
+            <text wx:for="{{ tabData }}" @tap="setTab" class="{{ showtab == index ? 'active' : ''}}" data-index="{{ index }}" data-type="{{ item.type }}" wx:key="{{ index }}" style="width: {{ 100/tabNum }}%">{{ item.text }}</text>
+            <view class="line-box" style="width:{{ 100/tabNum }}%; transform:translateX({{ 100*showtab }}%);">
+                <view class="lines" ></view>
+            </view>
+        </view>
+        <view class="tab-content" @touchstart="scrollTouchstart" @touchmove="scrollTouchmove" @touchend="scrollTouchend" style="width: {{ tabNum * 100 }}%; transform: translateX( -{{ showtab * 100 / tabNum }}%); margin-left: {{ marginleft }}px;">
+            <slot></slot>
+        </view>
+	</view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class NavTabs extends wepy.component {
+	props = {
+		tabnav: Array,
+        critical: {
+		    type: Number,
+            default: 150
+        }
+	}
+
+	data = {
+		tabData: [], //选项卡数据
+		tabNum: 0, //选项卡个数
+        showtab: 0,  //顶部选项卡索引
+        startx: 0,  //开始的位置x
+        endx: 0, //结束的位置x
+        marginleft: 0,  //滑动距离
+        scrollTop: 0 //滚动高度
+	}
+
+	computed = {
+		tabNum () {
+		    let len = this.tabData.length
+			return len
+		}
+	}
+
+	methods = {
+        setTab(e) { //设置选项卡选中索引
+            const edata = e.currentTarget.dataset
+            this.showtab = Number(edata.index)
+            this.$emit('showtab', this.showtab)
+            this.$apply()
+        },
+        scrollTouchstart(e) {
+            let x = e.touches[0].pageX
+            this.startx = x
+            this.startTime = +new Date()
+            this.$apply()
+        },
+        scrollTouchmove(e) {
+            let x = e.touches[0].pageX
+            this.endx = x
+            this.marginleft = x - this.startx
+            this.$apply()
+        },
+        scrollTouchend(e) {
+            if (!this.marginleft) {
+                return
+            }
+            let time = +new Date() -  this.startTime
+            let speed = this.marginleft / time
+
+
+            if (this.marginleft > this.critical) {
+                this.showtab = this.showtab - 1
+            } else if (-1 * this.marginleft > this.critical) {
+                this.showtab = this.showtab + 1
+            } else {
+                if (speed > 0.5) {
+                    this.showtab = this.showtab - 1
+                } else if (speed < -0.5) {
+                    this.showtab = this.showtab + 1
+                }
+            }
+
+            if (this.showtab >= this.tabNum - 1) {
+                this.showtab = this.tabNum - 1
+            } else if (this.showtab <= 0) {
+                this.showtab = 0
+            }
+
+            this.startx = 0
+            this.endx = 0
+            this.marginleft = 0
+            this.$emit('showtab', this.showtab)
+            this.$apply()
+        }
+	}
+
+}
+</script>

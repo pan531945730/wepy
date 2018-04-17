@@ -1,0 +1,139 @@
+<style lang="scss" scoped>
+@import "../css/base";
+
+.sections{
+    width: 100%;
+}
+.title{
+    margin-bottom: rpx(20);
+}
+picker{
+    display: inline-block;
+    margin-right: rpx(40);
+}
+</style>
+<template>
+    <view class="sections">
+        <picker @change="provinceChange" value="{{ provinceIndex }}" range="{{ province }}" range-key="{{ name }}">
+            <view class="picker">
+                省：{{ provinceValue }}
+            </view>
+        </picker>
+        <picker @change="cityChange" value="{{ cityIndex }}" range="{{ city }}" range-key="{{ name }}">
+            <view class="picker">
+                城市：{{ cityValue }}
+            </view>
+        </picker>
+        <picker @change="areaChange" value="{{ areaIndex }}" range="{{ area }}" range-key="{{ name }}">
+            <view class="picker">
+                区域：{{ areaValue }}
+            </view>
+        </picker>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class PickerCity extends wepy.component {
+	props = {
+        cityData: {
+            type: Object,
+            default: {}
+        },
+        children: {
+            type: String,
+            default: 'children'
+        },
+        name: {
+            type: String,
+            default: 'name'
+        },
+        id: {
+            type: String,
+            default: 'id'
+        }
+	}
+
+	data = {
+        provinceIndex: 0,
+        cityIndex: 0,
+        areaIndex: 0,
+        provinceValue: '',
+        cityValue: '',
+        areaValue: '',
+        provinceId: '',
+        cityId: '',
+        areaId: '',
+        province: [],
+        city: [],
+        area: []
+    }
+
+	methods = {
+        provinceChange(e) {
+            let obj = this.province[e.detail.value]
+            this.provinceValue = obj[this.name]
+            this.provinceId = obj[this.id]
+
+            this.city = this.cityData.city[this.provinceId]
+            if (!this.city) {
+                this.city = []
+                this.area = []
+                return
+            }
+            this.cityValue = this.city[0][this.name]
+            this.cityId = this.city[0][this.id]
+
+            this.area = this.cityData.area[this.cityId]
+            if (!this.area) {
+                this.area = []
+                return
+            }
+            this.areaValue = this.area[0][this.name]
+            this.areaId = this.area[0][this.id]
+            this.$emit('citychange', [this.provinceId, this.cityId, this.areaId])
+
+        },
+        cityChange(e) {
+            let obj = this.city[e.detail.value]
+            this.cityValue = obj[this.name]
+            this.cityId = obj[this.id]
+
+            this.area = this.cityData.area[this.cityId]
+            if (!this.area) {
+                this.area = []
+                return
+            }
+            this.areaValue = this.area[0][this.name]
+            this.areaId = this.area[0][this.id]
+            this.$emit('citychange', [this.provinceId, this.cityId, this.areaId])
+        },
+        areaChange(e) {
+            this.areaValue = this.area[e.detail.value][this.name]
+            this.areaId = this.area[e.detail.value][this.id]
+            this.$emit('citychange', [this.provinceId, this.cityId, this.areaId])
+        }
+	}
+
+	events = {
+        cityInit(provinceIndex, cityIndex, areaIndex) {
+            this.provinceIndex = provinceIndex
+            this.cityIndex = cityIndex
+            this.areaIndex = areaIndex
+
+            this.province = this.cityData.province
+            this.provinceValue = this.province[provinceIndex][this.name]
+            this.provinceId = this.province[provinceIndex][this.id]
+
+            this.city = this.cityData.city[this.provinceId]
+            this.cityValue = this.city[cityIndex][this.name]
+            this.cityId = this.city[cityIndex][this.id]
+
+            this.area = this.cityData.area[this.cityId]
+            this.areaValue = this.area[areaIndex][this.name]
+            this.areaId = this.area[areaIndex][this.id]
+            this.$emit('citychange', [this.provinceId, this.cityId, this.areaId])
+        }
+    }
+}
+</script>

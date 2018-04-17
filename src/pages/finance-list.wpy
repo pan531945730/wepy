@@ -1,0 +1,193 @@
+<style lang="scss">
+@import "../css/base";
+
+.list-item{
+    padding: 10px;
+    word-break: break-all;
+    text-align: justify;
+
+    text{
+        display: inline-block;
+        font-size: rpx(34);
+        color: $title-color;
+        position: relative;
+        top: rpx(10);
+    }
+}
+</style>
+<template>
+    <view class="container">
+        <navtab :tabData.sync="tabData"  @showtab="showtab">
+            <block  wx:for="{{ tabData }}" wx:key="{{ index }}">
+                <scroll :pullup="pullup" :loading.sync="loading" :noMore.sync="noMore" :mask.sync="mask">
+                    <view class="list-item" wx:for="{{ listMap[index] }}" wx:key="{{ item.index }}">
+                        <text>{{ item.index }} id: {{ item.id }}</text>
+                        <text>{{ item.text }}</text>
+                    </view>
+                </scroll>
+            </block>
+        </navtab>
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import NavTabs from '../components/nav-tab'
+import Scroll from '../components/pull-more'
+import api from '../common/api'
+
+export default class FinanceList extends wepy.page {
+    config = {
+        navigationBarTitleText: '财经'
+    }
+    components = {
+        'toast': Toast,
+        'navtab': NavTabs,
+        'scroll': Scroll
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        tabData: [],
+        listMap: {},
+        noMoreMap: {},
+        tabIndex: 0,
+        loading: true,
+        noMore: false,
+        mask: false,
+        maskTimer: null,
+        pullup: true
+    }
+
+    computed = {
+        now() {
+            return +new Date()
+        }
+    }
+
+    fetchData(index, id) {  //生成数据
+        const newquestions = [];
+        id = ~~id
+        for (let i = 0; i < 20; i++) {
+            id++
+            newquestions.push({
+                id: id,
+                index: index,
+                text: '服务名称适用品类服务实施详情服务期限服务生效时间摔碰管修一年笔记本本服务有效期内，如客户的数码摄照产品在正常使用过程中由于不慎将产品坠落、挤压、碰撞，而产生的硬件故障，本服务将免费提供硬件维修或更换，使产品重新恢复正常运行。12个月购机满30天后开始生效摔碰管修两年笔记本、数码相机、摄像机、手机、小数码'
+            })
+        }
+        return newquestions
+    }
+
+    pulldownData() {
+        setTimeout(() => {
+            this.listMap[this.tabIndex] = this.listMap[this.tabIndex].concat(this.fetchData(this.tabIndex, this.listMap[this.tabIndex].length))
+            this.mask = false
+            this.$broadcast('translateY')
+            this.$apply()
+        }, 1000)
+    }
+
+    pullupData() {
+        setTimeout(() => {
+            this.listMap[this.tabIndex] = this.fetchData(this.tabIndex, this.listMap[this.tabIndex].length).concat(this.listMap[this.tabIndex])
+            this.$broadcast('translateY')
+            this.$apply()
+        }, 1000)
+    }
+
+    noMoreData() {
+        this.noMore = true
+        this.loading = false
+        this.noMoreMap[this.tabIndex] = true
+        this.$broadcast('translateY')
+        this.$apply()
+    }
+
+    methods = {
+
+    }
+
+    events = {
+        showtab(index) {
+            this.tabIndex = index
+
+            if (!this.listMap[index]) {
+                this.listMap[index] = this.fetchData(index)
+            }
+            if (this.pullup) {
+                this.maskTimer && clearTimeout(this.maskTimer)
+                this.maskTimer = setTimeout( () => {
+                    this.mask = true
+                    this.$apply()
+                }, 1500)
+            }
+            if (this.noMoreMap[this.tabIndex]) {
+                this.noMore = true
+                this.loading = false
+            } else {
+                this.noMore = false
+                this.loading = true
+            }
+            this.$apply()
+        },
+        hideMask() {
+            this.mask = false
+        },
+        touchEnd(y) {
+            if (this.noMore) {
+                this.noMoreData()
+                return
+            }
+            if (this.listMap[this.tabIndex].length > 50) {
+                this.noMoreData()
+                return
+            }
+            if (y < 0) {
+                this.pulldownData()
+            } else {
+                this.pullupData()
+            }
+        },
+        refresh() {
+            this.mask = true
+            if (this.listMap[this.tabIndex].length > 50) {
+                this.noMoreData()
+            }
+        }
+    }
+
+    onLoad() {
+        this.tabData = [
+            {
+                "id": 1,
+                "text": "tab1"
+            },
+            {
+                "id": 2,
+                "text": "tab2"
+            },
+            {
+                "id": 3,
+                "text": "tab3"
+            },
+            {
+                "id": 4,
+                "text": "tab4"
+            }
+        ]
+        if (this.pullup) {
+            this.mask = true
+        }
+        this.listMap[this.tabIndex] = this.fetchData(this.tabIndex)
+        this.$apply()
+    }
+
+    onReachBottom() {
+        console.log('xxx')
+    }
+}
+</script>

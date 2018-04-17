@@ -1,0 +1,223 @@
+<style lang="scss" scoped>
+@import "../css/picker";
+
+.sections{
+    width: 100%;
+}
+
+</style>
+<template>
+    <view class="sections">
+        <view @tap="pickerShow">{{ year }}年{{ month }}月{{ day }}日</view>
+        <view class="picker-bg" style="display: {{ show ? 'block' : 'none' }};" @touchstart.stop="pickerHide"></view>
+        <view class="picker-box" style="transform: translateY({{ top }}px); display: {{ show ? 'block' : 'none' }};">
+            <view class="btn-box">
+                <button class="cancel" @tap="pickerHide">取消</button>
+                <button class="ok" @tap="pickerSure">确定</button>
+            </view>
+            <picker-view class="picker" indicator-style="height: 40px; line-height: 40px; background: rgba(0,0,0,.02); color: #f50;" value="{{ value }}" @change="change" @touchstart="changeReset">
+                <picker-view-column>
+                    <view wx:for="{{ years }}" wx:key="{{ index }}" class="item">{{ item }}年</view>
+                </picker-view-column>
+                <picker-view-column>
+                    <view wx:for="{{ months }}" wx:key="{{ index }}" class="item">{{ item }}月</view>
+                </picker-view-column>
+                <picker-view-column>
+                    <view wx:for="{{ days }}" wx:key="{{ index }}" class="item">{{ item }}日</view>
+                </picker-view-column>
+            </picker-view>
+        </view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+function padding(num) {
+    num = ~~num
+    if (num === 0) {
+        return '0'
+    }
+    if (num < 10) {
+        return '0' + num
+    }
+    return num + ''
+}
+function makeYear(start, end) {
+    let years = []
+    start = ~~start
+    end = ~~end
+    for (; start <= end; start++) {
+        years.push(padding(start))
+    }
+    return years
+}
+function makeMonth(start, end) {
+    let months = []
+    start = ~~start || 1
+    end = ~~end || 12
+    for (; start <= end; start++) {
+        months.push(padding(start))
+    }
+    return months
+}
+function makeDay(year, month, oldStart, oldEnd) {
+    let days = []
+    let start = 1
+    let end
+    month = ~~month
+    year = ~~year
+    if (month === 2 && year%4 === 0) {
+        end = 29
+    } else if (month === 2 && year%4 !== 0) {
+        end = 28
+    } else if (/(1|3|5|7|8|10|12)/.test(month)) {
+        end = 31
+    } else if (/(4|6|9|11)/.test(month)) {
+        end = 30
+    }
+    start = ~~oldStart || start
+    end = ~~oldEnd || end
+
+    for (; start <= end; start++) {
+        days.push(padding(start))
+    }
+    return days
+}
+function getValue(opt) {
+    let data = []
+    data[0] = opt.years.indexOf(opt.year)
+    data[1] = opt.months.indexOf(opt.month)
+    data[2] = opt.days.indexOf(opt.day)
+    return data
+}
+const date = new Date()
+const end = date.getFullYear() + '-' + padding(date.getMonth() + 1) + '-' + padding(date.getDate())
+
+
+export default class PickerDate extends wepy.component {
+	props = {
+        start: {
+            type: String,
+            default: '1900-01-01'
+        },
+        end: {
+            type: String,
+            default: end
+        }
+	}
+
+	data = {
+        top: 300,
+        show: false,
+        years: [],
+        year: '',
+        months: [],
+        month: '',
+        days: [],
+        day: '',
+        value: [9999, 1, 1]
+    }
+
+    makeData(defaultValue) {
+        let data = defaultValue.split(/[-\/]/)
+        let year = data[0]
+        let month = data[1]
+        let startData = this.start.split(/[-\/]/)
+        let endData = this.end.split(/[-\/]/)
+        this.years = makeYear(startData[0], endData[0])
+
+        if (year === startData[0]) {
+            this.months = makeMonth(startData[1])
+            if (month === startData[1]) {
+                this.days = makeDay(year, month, startData[2])
+            } else {
+                this.days = makeDay(year, month)
+            }
+            return
+
+        }
+        if (year === endData[0]) {
+            this.months = makeMonth(1, endData[1])
+
+            if (month === endData[1]) {
+                this.days = makeDay(year, month, 1, endData[2])
+            } else {
+                this.days = makeDay(year, month)
+            }
+            return
+        }
+        this.months = makeMonth()
+        this.days = makeDay(year, month)
+
+    }
+
+	methods = {
+        change(e) {
+            const val = e.detail.value
+            this.changeYear = this.years[val[0]]
+            this.changeMonth = this.months[val[1]]
+            this.changeDay = this.days[val[2]]
+            this.makeData(this.changeYear + '-' + this.changeMonth + '-' + this.changeDay)
+        },
+        changeReset() {
+            this.changeYear = this.changeMonth = this.changeDay = null
+        },
+        pickerSure() {
+            if (!this.changeYear || !this.changeMonth || !this.changeDay) { //防止滑动过程中点击按钮bug
+                return
+            }
+            if (this.changeYear !== true) {
+                this.year = this.changeYear
+                this.month = this.changeMonth
+                this.day = this.changeDay
+            }
+
+            this.top = 300
+
+            setTimeout(() => {
+                this.show = false
+                this.$apply()
+            }, 500)
+        },
+        pickerShow() {
+            this.show = true
+            this.changeYear = this.changeMonth = this.changeDay = true
+            setTimeout(() => {
+                this.top = 0
+                this.value = getValue({
+                    years: this.years,
+                    year: this.year,
+                    months: this.months,
+                    month: this.month,
+                    days: this.days,
+                    day: this.day
+                })
+                this.$apply()
+            })
+        },
+        pickerHide() {
+            if (!this.changeYear || !this.changeMonth || !this.changeDay) {
+                return
+            }
+            this.top = 300
+            this.makeData(this.year + '-' + this.month + '-' + this.day)
+            this.value = [0, 0, 0]
+            setTimeout(() => {
+                this.show = false
+                this.$apply()
+            }, 500)
+        }
+	}
+
+	events = {
+        dateInit(defaultValue) {
+            let data = defaultValue.split(/[-\/]/)
+            this.year = data[0]
+            this.month = data[1]
+            this.day = data[2]
+
+            this.makeData(defaultValue)
+        }
+    }
+}
+</script>

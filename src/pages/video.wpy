@@ -1,0 +1,70 @@
+<style lang="scss">
+@import "../css/base";
+
+.navigator-hover{
+    color: $main-color;
+    background: transparent;
+}
+
+</style>
+<template>
+	<view class="container">
+        <danmu :videoSrc="videoSrc" :poster="poster"></danmu>
+		<toast />
+	</view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import Danmu from '../components/danmu'
+import api from '../common/api'
+
+export default class Video extends wepy.page {
+	config = {
+		navigationBarTitleText: '弹幕'
+	}
+	components = {
+		'toast': Toast,
+        'danmu': Danmu
+	}
+
+	mixins = [Mixin]
+
+	data = {
+		videoSrc: 'http://image.1hucj.com/Video/20170531/20170531105833440839.mp4',
+        poster: 'http://image.1hucj.com/images/20170526/20170526152739944687ee.jpg'
+	}
+
+	computed = {
+		now () {
+			return +new Date()
+		}
+	}
+
+    methods = {
+
+	}
+
+	events = {
+        danmuEmpty() {
+            this.$invoke('toast', 'show', {
+                title: '请输入弹幕内容'
+            })
+        }
+    }
+
+	onLoad () {
+
+	}
+
+    onReachBottom(e) {
+        console.log(e)
+    }
+
+    onReady() {
+        this.$broadcast('danmu')
+    }
+}
+</script>

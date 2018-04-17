@@ -1,0 +1,3 @@
+@import "./../components/danmu.wxss";
+@import "./../npm/wepy-com-toast/toast.wxss";
+.navigator-hover{color:#f9221c;background:transparent}

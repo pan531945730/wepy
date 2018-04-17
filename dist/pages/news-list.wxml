@@ -1,0 +1,48 @@
+
+	<view class="container" bindtap="tap">
+        
+    <scroll-view class="scroll-view _6923a86" scroll-top="{{ $scrollmore$scrollTop }}" scroll-y bindscrolltolower="$scrollmore$tolower" enable-back-to-top="enable-back-to-top" bindscroll="$scrollmore$scrolling">
+        
+            <view class="list-item"  wx:for="{{ listData }}" wx:key="{{ item.index }}">
+                <text>{{ item.index }} id: {{ item.id }}</text>
+                <text>{{ item.text }}</text>
+            </view>
+        
+        <view class="weui-loadmore_line _6923a86">
+            <text class="weui-loadmore__tips_in-line _6923a86">暂无数据</text>
+        </view>
+        <view class="loading-wrapper _6923a86"  wx:if="{{ $scrollmore$loading }}">
+            <view class="uil-default-css _6923a86">
+                <view class="loading-item _6923a86" style="transform: rotate(0deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(30deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(60deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(90deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(120deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(150deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(180deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(210deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(240deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(270deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(300deg) translate(0px, -60px);"/>
+                <view class="loading-item _6923a86" style="transform: rotate(330deg) translate(0px, -60px);"/>
+            </view>
+        </view>
+        <view class="no-more _6923a86"  wx:if="{{ $scrollmore$noMore }}">没有更多数据了</view>
+
+    </scroll-view>
+		
+    <view class="wetoast {{$toast$reveal ? 'wetoast_show' : ''}}">
+        <view class="wetoast__mask"/>
+        <view class="wetoast__bd" animation="{{$toast$animationData}}">
+            <block  wx:if="{{$toast$img}}">
+                <view class="wetoast__bd__img {{$toast$imgClassName || ''}}">
+                    <image class="wetoast__bd__img_desc" src="{{$toast$img}}" mode="{{$toast$imgMode || 'scaleToFill'}}"/>
+                </view>
+            </block>
+            <block  wx:if="{{$toast$title}}">
+                <view class="wetoast__bd__title {{$toast$titleClassName || ''}}">{{$toast$title}}</view>
+            </block>
+        </view>
+    </view>
+
+	</view>

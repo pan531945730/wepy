@@ -1,0 +1,186 @@
+<style lang="scss">
+@import "./css/base";
+@import "./css/weui";
+
+page{
+    background: #f4f4f4;
+    font-size: $main-font-size;
+    font-family: $fontStack;
+    height: 100%;
+}
+.container {
+	height: 100%;
+	box-sizing: border-box;
+}
+navigator{
+    display: inline-block;
+    padding: 0 20px;
+    background: transparent;
+}
+button,
+input,
+textarea{
+	border: 0;
+    font-family: $fontStack;
+    background: #fff;
+}
+textarea{
+    padding: rpx(20);
+    height: rpx(160);
+    border-radius: 3px;
+}
+
+.button-hover,
+.navigator-hover{
+    opacity: 1;
+}
+view[hover],
+button,
+navigator{
+    position: relative;
+
+    &::before{
+        content: "";
+        height: 100%;
+        width: 100%;
+        position: absolute;
+        left: 0;
+        top: 0;
+        background: rgba(0,0,0,.1);
+        transform: scale(0);
+        border-radius: 50%;
+    }
+}
+
+view[hover].hover,
+.navigator-hover,
+.button-hover
+{
+    overflow: hidden;
+
+    &::before{
+        animation: rippleDrop 1s linear infinite;
+    }
+}
+@keyframes rippleDrop {
+    0%{
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(5);
+        opacity: 0;
+    }
+}
+</style>
+
+<script>
+import wepy from 'wepy'
+import 'wepy-async-function'
+
+export default class extends wepy.app {
+	config = {
+		pages: [
+		    'pages/index',
+		    'pages/user',
+		    'pages/form',
+            'pages/wx-parse',
+            'pages/map',
+            'pages/canvas',
+            'pages/demo',
+            'pages/news-list',
+            'pages/finance-list',
+            'pages/video',
+
+		],
+		window: {
+			backgroundTextStyle: 'light',
+			navigationBarBackgroundColor: '#555',
+			navigationBarTitleText: '聚红',
+			navigationBarTextStyle: '#fff'
+		},
+		tabBar: {
+			color: '#000',
+			selectedColor: '#f50',
+			backgroundColor: '#fff',
+			borderStyle: 'black',
+			position: 'bottom',
+			list: [
+				{
+					pagePath: 'pages/index',
+					text: '首页',
+					iconPath: './img/home.png',
+					selectedIconPath: './img/home-on.png'
+				},
+				{
+					pagePath: 'pages/finance-list',
+					text: '拉动刷新',
+					iconPath: './img/dollar.png',
+					selectedIconPath: './img/dollar-on.png'
+				},
+				{
+					pagePath: 'pages/news-list',
+					text: '滚动刷新',
+					iconPath: './img/media.png',
+					selectedIconPath: './img/media-on.png'
+				},
+				{
+					pagePath: 'pages/video',
+					text: '弹幕',
+					iconPath: './img/culture.png',
+					selectedIconPath: './img/culture-on.png'
+				},
+                {
+                    pagePath: 'pages/user',
+                    text: '个人中心',
+                    iconPath: './img/user.png',
+                    selectedIconPath: './img/user-on.png'
+                }
+			]
+		}
+	}
+
+	globalData = {
+		userInfo: null
+	}
+
+	constructor () {
+		super()
+		this.use('promisify');
+		this.use('requestfix')
+        this.system = wx.getSystemInfoSync()
+	}
+
+	onLaunch (options) {
+		this.testAsync()
+	}
+
+	sleep (s) {
+		return new Promise((resolve, reject) => {
+			setTimeout(() => {
+				resolve('promise resolved')
+			}, s * 1000)
+		})
+	}
+
+	async testAsync () {
+		const data = await this.sleep(3)
+
+	}
+
+	async getUserInfo (success, fail) {
+		if (this.globalData.userInfo) {
+			success( this.globalData.userInfo )
+			return
+		}
+		try{
+			let code = await wepy.login()
+			let getInfo = await wepy.getUserInfo()
+			this.globalData.userInfo = getInfo.userInfo
+			success && success(getInfo.userInfo)
+		} catch(e) {
+			fail && fail(e)
+		}
+	}
+}
+</script>

@@ -1,0 +1,36 @@
+
+    <view class="container">
+	    <view class="userinfo">
+            <view class="arrow"/>
+            <view class="lines"/>
+            <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}"/>
+            <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
+        </view>
+        <button class="go-page" type="primary" bindtap="goDemo">demo页</button>
+        <button class="go-page" type="cancel" bindtap="goPage" data-wpygopage-a="index">去首页</button>
+        <button class="go-page" type="cancel" bindtap="goPage" data-wpygopage-a="finance-list">拉动刷新</button>
+        <button class="go-page" type="cancel" bindtap="goPage" data-wpygopage-a="news-list">滚动刷新</button>
+        <movable-area style="height: 200px; width: 200px; background: red;">
+            <movable-view bindtouchmove="move" direction="all" inertia="inertia" style="height: 50px; width: 50px; background: blue;" x="{{ movX }}" y="{{ movY }}">
+            </movable-view>
+        </movable-area>
+        <view class="contact">
+            <contact-button type="default-dark" size="150" session-from="weapp">
+            </contact-button>
+        </view>
+        
+    <view class="wetoast {{$toast$reveal ? 'wetoast_show' : ''}}">
+        <view class="wetoast__mask"/>
+        <view class="wetoast__bd" animation="{{$toast$animationData}}">
+            <block  wx:if="{{$toast$img}}">
+                <view class="wetoast__bd__img {{$toast$imgClassName || ''}}">
+                    <image class="wetoast__bd__img_desc" src="{{$toast$img}}" mode="{{$toast$imgMode || 'scaleToFill'}}"/>
+                </view>
+            </block>
+            <block  wx:if="{{$toast$title}}">
+                <view class="wetoast__bd__title {{$toast$titleClassName || ''}}">{{$toast$title}}</view>
+            </block>
+        </view>
+    </view>
+
+    </view>

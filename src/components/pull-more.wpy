@@ -1,0 +1,253 @@
+<style lang="scss" scoped>
+@import "../css/base";
+
+.scroll-box{
+    width: rpx(750);
+    flex: 1;
+    display: flex;
+    height: 100%;
+    overflow: hidden;
+    position: relative;
+
+}
+.scroll-view{
+    width: rpx(750);
+    flex: 1;
+    display: flex;
+    height: 100%;
+    transition: transform 0.5s;
+    background: #fff;
+    position: relative;
+    z-index: 5;
+}
+.no-more{
+    width: rpx(750);
+    height: rpx(60);
+    line-height: rpx(60);
+    text-align: center;
+    background: #000;
+    color: #fff;
+    position: absolute;
+
+    &.top{
+        top: 0;
+    }
+    &.bottom{
+        bottom: 0;
+    }
+}
+@keyframes uil-default-anim {
+    0% {
+        opacity: 1
+    }
+    100% {
+        opacity: 0
+    }
+}
+.uil-default-css {
+    position: relative;
+    background: none;
+    width: 100%;
+    height: 100px;
+    transform: scale(.15);
+
+    .loading-item{
+        top: 80px;
+        left: 93px;
+        width: 14px;
+        height: 40px;
+        background: $main-color;
+        transform: rotate(0deg) translate(0,-60px);
+        border-radius: 10px;
+        position: absolute;
+        animation: uil-default-anim 1s linear infinite;
+    }
+
+    @for $i from 0 through 11 {
+        .loading-item:nth-of-type(#{$i}) {
+            animation-delay: -0.5 + $i*0.08333333333333331s !important;
+        }
+    }
+}
+.loading-wrapper {
+    position: absolute;
+    left: 0;
+    width: rpx(750);
+
+    &.top{
+        top: rpx(-40);
+    }
+    &.bottom{
+        bottom: rpx(-30);
+    }
+}
+.mask{
+    width: rpx(750);
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    background: rgba(0,0,0,0);
+}
+</style>
+<template>
+    <view class="scroll-box">
+        <scroll-view
+            class="scroll-view" @touchstart="scrollTouchstart"
+            style="transform: translateY({{ translateY }}px);"
+            scroll-y @scrolltolower="tolower"
+            enable-back-to-top
+            @scrolltoupper="toupper" @scroll="scrolling"
+        >
+            <slot></slot>
+        </scroll-view>
+        <view class="loading-wrapper top" wx:if="{{ loading && pullup }}">
+            <view class="uil-default-css">
+                <view class="loading-item" style="transform: rotate(0deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(30deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(60deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(90deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(120deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(150deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(180deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(210deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(240deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(270deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(300deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(330deg) translate(0px, -60px);"></view>
+            </view>
+        </view>
+        <view class="loading-wrapper bottom" wx:if="{{ loading  && pulldown }}">
+            <view class="uil-default-css">
+                <view class="loading-item" style="transform: rotate(0deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(30deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(60deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(90deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(120deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(150deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(180deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(210deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(240deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(270deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(300deg) translate(0px, -60px);"></view>
+                <view class="loading-item" style="transform: rotate(330deg) translate(0px, -60px);"></view>
+            </view>
+        </view>
+        <view class="no-more top" wx:if="{{ noMore  && pullup }}">没有更多数据了</view>
+        <view class="no-more bottom" wx:if="{{ noMore && pulldown }}">没有更多数据了</view>
+        <view class="mask" hidden="{{ !mask }}" @touchstart.stop="maskTouchstart" @touchmove.stop="maskTouchmove" @touchend="maskTouchend"></view>
+    </view>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class Scroll extends wepy.component {
+	props = {
+        loading: {
+		    type: Boolean,
+            default: true
+        },
+        noMore: {
+            type: Boolean,
+            default: false
+        },
+        mask: {
+            type: Boolean,
+            default: false
+        },
+        pulldown: { //下拉刷新
+            type: Boolean,
+            default: false
+        },
+        pullup: { //上拉刷新
+            type: Boolean,
+            default: false
+        }
+	}
+
+	data = {
+        startY: 0,
+        translateY: 0,
+        startX: 0,
+        timer: null, //滑动太快maskTouchEnd不触发
+        scrollData: [] //scroll个数
+	}
+
+	methods = {
+        scrolling(e) { //滚动监听事件
+
+            if (this.pullup && e.detail.deltaY < 0) {
+                this.$emit('hideMask')
+            }
+            if (this.pulldown && e.detail.deltaY > 0) {
+                this.$emit('hideMask')
+            }
+            this.translateY = 0
+        },
+        scrollTouchstart() {
+            this.translateY = 0
+        },
+        maskTouchstart(e) {
+            this.translateY = 0
+            let touches = e.touches[0]
+            this.startY = touches.pageY
+            this.startX = touches.pageX
+            this.timer = setTimeout(() => {
+                this.translateY = 0
+                this.$apply()
+            }, 1000)
+        },
+        maskTouchmove(e) {
+            let touches = e.touches[0]
+            let disY = touches.pageY - this.startY
+            let disX = touches.pageX - this.startX
+            if (Math.abs(disY) <= 10 && Math.abs(disX) >= 10) {
+                this.$emit('hideMask')
+                this.translateY = 0
+                return
+            }
+            if (this.pulldown && disY >= 10) { //相反方向时
+                this.$emit('hideMask')
+                this.translateY = 0
+                return
+            }
+            if (this.pullup && disY <= -10) { //相反方向时
+                this.$emit('hideMask')
+                this.translateY = 0
+                return
+            }
+            clearTimeout(this.timer)
+            if (disY > 80) {
+                disY = 80
+            } else if (disY < -80) {
+                disY = -80
+            }
+            this.translateY = disY
+        },
+        maskTouchend(e) {
+            clearTimeout(this.timer)
+            if (Math.abs(this.translateY) > 60) {
+                this.$emit('touchEnd', this.translateY)
+                return
+            }
+            this.translateY = 0
+        },
+        tolower() {
+            if (this.pulldown) {
+                this.$emit('refresh')
+            }
+        },
+        toupper() {
+            if (this.pullup) {
+                this.$emit('refresh')
+            }
+        }
+	}
+
+	events = {
+        translateY() {
+            this.startY = 0
+            this.translateY = 0
+        }
+    }
+}
+</script>

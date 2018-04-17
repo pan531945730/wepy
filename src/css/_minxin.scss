@@ -1,0 +1,124 @@
+﻿/*
+ sass中的一些常用函数和方法
+*/
+@mixin ellipsis($num: 1) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    @if $num == 1 {
+        white-space: nowrap;
+    } @else {
+        display: -webkit-box;
+        -webkit-line-clamp: $num;
+        -webkit-box-orient: vertical;
+    }
+}
+
+//实心三角形
+%triangle-basic{
+    content:"";
+    height: 0;
+    width: 0;
+    overflow: hidden;
+}
+@mixin triangle($direction, $size, $borderColor ) {
+    @extend %triangle-basic;
+    @if $direction == top {
+        border-bottom:$size solid $borderColor;
+        border-left:$size dashed transparent;
+        border-right:$size dashed transparent;
+        border-top: 0;
+    }
+    @else if $direction == right {
+        border-left:$size solid $borderColor;
+        border-top:$size dashed transparent;
+        border-bottom:$size dashed transparent;
+        border-right: 0;
+    }
+    @else if $direction == bottom {
+        border-top:$size solid $borderColor;
+        border-left:$size dashed transparent;
+        border-right:$size dashed transparent;
+        border-bottom: 0;
+    }
+    @else if $direction == left {
+        border-right:$size solid $borderColor;
+        border-top:$size dashed transparent;
+        border-bottom:$size dashed transparent;
+        border-left: 0;
+    }
+}
+// 三角箭头
+@mixin setArrow($direction, $size, $borderColor, $borderWidth: 1px) {
+    display: inline-block;
+    height: $size;
+    width: $size;
+    border-width: $borderWidth $borderWidth 0 0;
+    border-color: $borderColor;
+    border-style: solid;
+
+    @if $direction == top {
+        transform: matrix(0.71,-0.71,0.71,0.71,0,0); // rotate(-45deg)
+    }
+    @else if $direction == right {
+        transform: matrix(0.71,0.71,-0.71,0.71,0,0); // rotate(45deg);
+
+        position: relative;
+        top: -2px;
+    }
+    @else if $direction == bottom {
+        transform: matrix(-0.71,0.71,-0.71,-0.71,0,0); // rotate(135deg);
+
+        position: relative;
+        top: -3px;
+    }
+    @else if $direction == left {
+        transform: matrix(-0.71,-0.71,0.71,-0.71,0,0); // rotate(-135deg);
+
+        position: relative;
+        top: -2px;
+    }
+}
+
+//设置1px线条
+@mixin setLine($direction, $color: #ddd, $size: 1px) {
+
+    content: " ";
+    position: absolute;
+    transform-origin: 0 0;
+
+    @if $direction == top {
+        top: 0;
+        left: 0;
+        width: 100%;
+        border-top: $size solid $color;
+        transform: scaleY(.5);
+    }
+    @else if $direction == right {
+        top: 0;
+        right: 0;
+        height: 100%;
+        border-right: $size solid $color;
+        transform: scaleX(.5);
+    }
+    @else if $direction == bottom {
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        border-bottom: $size solid $color;
+        transform: scaleY(.5);
+    }
+    @else if $direction == left {
+        left: 0;
+        top: 0;
+        height: 100%;
+        border-left: $size solid $color;
+        transform: scaleX(.5);
+    } @else {
+        left: 0;
+        top: 0;
+        width: 200%;
+        height: 200%;
+        transform: scale(.5);
+    }
+}
+

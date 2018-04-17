@@ -1,0 +1,107 @@
+<style lang="scss" scoped>
+@import "../css/base";
+
+.checkbox{
+    width: rpx(40);
+    height: rpx(40);
+    display: inline-block;
+    position: relative;
+    z-index: 2;
+    margin-right: rpx(10);
+
+    checkbox{
+        width: rpx(44);
+        height: rpx(44);
+        opacity: 0;
+    }
+    .icon{
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        box-sizing: border-box;
+        border: rpx(1) solid #ccc;
+        border-radius: 50%;
+        background: #fff;
+
+        icon{
+            visibility: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+        &.checked{
+            border: 0;
+            background: transparent;
+
+            icon{
+                visibility: visible;
+            }
+        }
+    }
+}
+</style>
+<template>
+    <label class="{{ labelClass }}"  @tap="change" data-index="{{ index }}" data-checked="{{ checked }}">
+        <view class="checkbox">
+            <checkbox value="{{ name }}" checked="{{ checked }}" />
+            <view class="icon {{ checkedData[index]  ? 'checked' : '' }}">
+                <icon size="20" type="success"></icon>
+            </view>
+            <view  wx:if="{{ !showData[index] && checked  }}" class="icon checked">
+                <icon size="20" type="success"></icon>
+            </view>
+        </view>
+        <text>{{ value }}</text>
+    </label>
+</template>
+<script>
+import wepy from 'wepy'
+
+export default class Checkbox extends wepy.component {
+	props = {
+        labelClass: {
+            type: String,
+            default: ''
+        },
+        index: {
+            type: Number,
+            default: 0
+        },
+        name: {
+            type: String,
+            default: ''
+        },
+        value: {
+            type: String,
+            default: ''
+        },
+        checked: {
+            type: Boolean,
+            default: false
+        }
+	}
+
+	data = {
+	    showData: {},
+        checkedData: {}
+    }
+
+	methods = {
+        change(e) {
+            let index = e.currentTarget.dataset.index
+            if (typeof this.checkedData[index] === 'undefined') {
+                this.showData[index] = true
+                this.checkedData[index] = !e.currentTarget.dataset.checked
+            } else {
+                this.checkedData[index] = !this.checkedData[index]
+            }
+        }
+	}
+
+	events = {
+
+    }
+}
+</script>

@@ -1,0 +1,138 @@
+<style lang="scss">
+@import "../css/base";
+
+.arrow {
+    @include setArrow(top, 10px, #f50, 2px);
+    margin: rpx(20);
+}
+
+.lines {
+    width: rpx(750);
+    height: rpx(50);
+    background: #fff;
+    position: relative;
+    margin: rpx(40) auto;
+
+    &::before{
+        @include setLine(top, #f50)
+    }
+    &::after{
+        @include setLine(bottom, #f50)
+    }
+
+}
+.userinfo-avatar{
+    width: rpx(40);
+    height: rpx(40);
+    border-radius: 50%;
+}
+.userinfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+}
+.go-page{
+    margin-top: rpx(40);
+}
+.contact{
+
+    text-align: center;
+}
+</style>
+<template>
+    <view class="container">
+	    <view class="userinfo">
+            <view class="arrow"></view>
+            <view class="lines"></view>
+            <image class="userinfo-avatar" src="{{ userInfo.avatarUrl }}" />
+            <view class="userinfo-nickname">{{ userInfo.nickName }}</view>
+        </view>
+        <button class="go-page" type="primary" @tap="goDemo">demo页</button>
+        <button class="go-page" type="cancel" @tap="goPage('index')">去首页</button>
+        <button class="go-page" type="cancel" @tap="goPage('finance-list')">拉动刷新</button>
+        <button class="go-page" type="cancel" @tap="goPage('news-list')">滚动刷新</button>
+        <movable-area style="height: 200px; width: 200px; background: red;">
+            <movable-view @touchmove="move" direction="all" inertia style="height: 50px; width: 50px; background: blue;" x="{{ movX }}" y="{{ movY }}">
+            </movable-view>
+        </movable-area>
+        <view class="contact">
+            <contact-button
+                type="default-dark"
+                size="150"
+                session-from="weapp"
+            >
+            </contact-button>
+        </view>
+        <toast />
+    </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Mixin from '../mixins/index'
+import Toast from 'wepy-com-toast'
+import api from '../common/api'
+
+export default class User extends wepy.page {
+    config = {
+        navigationBarTitleText: '个人中心'
+    }
+    components = {
+        'toast': Toast
+    }
+
+    mixins = [Mixin]
+
+    data = {
+        userInfo: {},
+        movX: 0,
+        movY: 0
+    }
+
+    computed = {
+        now () {
+            return +new Date()
+        }
+    }
+
+    methods = {
+        goDemo() {
+            wx.navigateTo({
+                url: 'demo?id=1'
+            })
+        },
+        goPage(url) {
+          wx.switchTab({
+              url: url
+          })
+        },
+        move(e) {
+            console.log(e.touches[0])
+        }
+    }
+
+    onLoad (e, data) {
+        let self = this
+        this.$parent.getUserInfo(function (userInfo) {
+
+            if (userInfo) {
+                self.userInfo = userInfo
+            }
+            self.$apply()
+
+        }, function () {
+            this.$invoke('toast', 'show', {
+                title: '获取个人信息失败'
+            })
+        })
+        api.newsList().then(res => {
+            this.$invoke('toast', 'show', {
+                title: '获取新闻列表成功',
+                img: '../img/up.png'
+            })
+        })
+        console.log(data.preload);
+    }
+}
+</script>
