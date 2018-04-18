@@ -1,0 +1,7 @@
+# 忽略指定文件夹
+npm-debug.log
+dist
+node_modules
+
+# 忽略名称中末尾为ignore的文件夹
+*ignore/
