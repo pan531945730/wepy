@@ -1,1 +1,0 @@
-.checkbox{width:34rpx;height:34rpx;display:inline-block;position:relative;z-index:2;margin-right:10rpx}.checkbox checkbox{width:34rpx;height:34rpx;opacity:0}.checkbox .icon{width:32rpx;height:32rpx;border:1rpx solid #ccc;background:#fff;border-radius:2px;position:absolute;left:0;top:1px}.checkbox .icon.checked{background:#aaa}

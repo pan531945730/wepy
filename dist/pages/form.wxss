@@ -1,6 +1,0 @@
-@import "./../components/picker-date.wxss";
-@import "./../components/picker-city2.wxss";
-@import "./../components/picker-city.wxss";
-@import "./../components/checkbox.wxss";
-@import "./../npm/wepy-com-toast/toast.wxss";
-.label{display:inline-block;margin:20px 0 0 20px}checkbox-group{width:750rpx}.scale-smaller{transform:scale(0.82)}.section{margin:20rpx 20rpx 0}.section-title{margin-bottom:20rpx;color:#f50}.choose{width:200px;height:80px;text-align:center;line-height:80px;background:#3CC51F;color:#fff;border-radius:5px;margin:40rpx auto}
